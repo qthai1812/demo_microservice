@@ -3,6 +3,9 @@ package com.devteria.identity.service;
 import java.util.HashSet;
 import java.util.List;
 
+import com.devteria.identity.dto.response.UserProfileRespone;
+import com.devteria.identity.mapper.UserProfileMapper;
+import com.devteria.identity.repository.httpclient.ProfileClient;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +27,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +38,10 @@ public class UserService {
     RoleRepository roleRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    UserProfileMapper userProfileMapper;
+    ProfileClient profileClient;
 
-    public UserResponse createUser(UserCreationRequest request) {
+    public UserProfileRespone createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
 
         User user = userMapper.toUser(request);
@@ -45,8 +51,15 @@ public class UserService {
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
 
         user.setRoles(roles);
+        userRepository.save(user);
 
-        return userMapper.toUserResponse(userRepository.save(user));
+        var userProfileRequest = userProfileMapper.toProfileCreationRequest(request);
+        userProfileRequest.setUserid(user.getId());
+        UserProfileRespone infor4 = profileClient.createUserProfile(userProfileRequest);
+
+        log.info(infor4.toString());
+
+        return infor4;
     }
 
     public UserResponse getMyInfo() {

@@ -46,18 +46,11 @@ public class UserControllerTest {
 
         request = UserCreationRequest.builder()
                 .username("john")
-                .firstName("John")
-                .lastName("Doe")
-                .password("12345678")
-                .dob(dob)
                 .build();
 
         userResponse = UserResponse.builder()
                 .id("cf0600f538b3")
                 .username("john")
-                .firstName("John")
-                .lastName("Doe")
-                .dob(dob)
                 .build();
     }
 
