@@ -8,11 +8,14 @@ import com.devteria.profile.repository.UserProfileRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PUBLIC)
 public class UserProfileService {
@@ -25,6 +28,10 @@ public class UserProfileService {
         return userProfileMapper.toUserProfileRespone(userProfile);
     }
     public List<UserProfileRespone> getUserProfile(){
+
+        var securityContextHolder = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().toList();
+        log.info("scope: {}",securityContextHolder);
+
        return userProfileRepository.findAll().stream().map(userProfileMapper::toUserProfileRespone).toList();
     }
 }

@@ -3,9 +3,11 @@ package com.devteria.identity.service;
 import java.util.HashSet;
 import java.util.List;
 
+import com.devteria.event.dto.NotificationEvent;
 import com.devteria.identity.dto.response.UserProfileRespone;
 import com.devteria.identity.mapper.UserProfileMapper;
 import com.devteria.identity.repository.httpclient.ProfileClient;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,6 +42,7 @@ public class UserService {
     PasswordEncoder passwordEncoder;
     UserProfileMapper userProfileMapper;
     ProfileClient profileClient;
+    KafkaTemplate<String, NotificationEvent> kafkaTemplate;
 
     public UserProfileRespone createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
@@ -57,8 +60,15 @@ public class UserService {
         userProfileRequest.setUserid(user.getId());
         UserProfileRespone infor4 = profileClient.createUserProfile(userProfileRequest);
 
-        log.info(infor4.toString());
 
+
+
+        kafkaTemplate.send("onboard-successfull", NotificationEvent.builder()
+                        .channel("Email")
+                        .recipient(request.getEmail())
+                        .subject("Create account user successful")
+                        .body("Hello. This is my first transactional email sent from bookthairia")
+                        .build());
         return infor4;
     }
 
@@ -89,7 +99,7 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+ //   @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         log.info("In method get Users");
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
