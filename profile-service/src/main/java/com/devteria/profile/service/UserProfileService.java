@@ -27,10 +27,16 @@ public class UserProfileService {
         userProfileRepository.save(userProfile);
         return userProfileMapper.toUserProfileRespone(userProfile);
     }
+
+    public UserProfileRespone getUserProfileByUserId(String userId){
+        UserProfile userProfile = userProfileRepository.findUserProfileByUserId(userId);
+        return userProfileMapper.toUserProfileRespone(userProfile);
+    }
+
     public List<UserProfileRespone> getUserProfile(){
 
-        var securityContextHolder = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().toList();
-        log.info("scope: {}",securityContextHolder);
+        //var securityContextHolder = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().toList();
+        //log.info("scope: {}",securityContextHolder);
 
        return userProfileRepository.findAll().stream().map(userProfileMapper::toUserProfileRespone).toList();
     }

@@ -44,7 +44,7 @@ public class UserService {
     ProfileClient profileClient;
     KafkaTemplate<String, NotificationEvent> kafkaTemplate;
 
-    public UserProfileRespone createUser(UserCreationRequest request) {
+    public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
 
         User user = userMapper.toUser(request);
@@ -57,11 +57,8 @@ public class UserService {
         userRepository.save(user);
 
         var userProfileRequest = userProfileMapper.toProfileCreationRequest(request);
-        userProfileRequest.setUserid(user.getId());
-        UserProfileRespone infor4 = profileClient.createUserProfile(userProfileRequest);
-
-
-
+        userProfileRequest.setUserId(user.getId());
+        profileClient.createUserProfile(userProfileRequest);
 
         kafkaTemplate.send("onboard-successfull", NotificationEvent.builder()
                         .channel("Email")
@@ -69,7 +66,7 @@ public class UserService {
                         .subject("Create account user successful")
                         .body("Hello. This is my first transactional email sent from bookthairia")
                         .build());
-        return infor4;
+        return userMapper.toUserResponse(user);
     }
 
     public UserResponse getMyInfo() {
