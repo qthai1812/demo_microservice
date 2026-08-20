@@ -1,0 +1,14 @@
+package com.example.dto.request;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@Getter
+@Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PostRequest {
+    String content;
+}

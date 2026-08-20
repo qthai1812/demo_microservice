@@ -1,4 +1,4 @@
-package com.devteria.profile.dto.request;
+package com.example.dto.response;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Setter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserProfileRequest {
+public class UserProfileRespone {
     String userId;
     String firstName;
     String lastName;
