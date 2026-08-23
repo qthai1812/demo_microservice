@@ -1,19 +1,22 @@
-package com.devteria.identity.dto.response;
+package com.example.file_service.dto.response;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserProfileRespone {
+    String id;
     String userId;
     String username;
+    String avatar;
     String firstName;
     String lastName;
     LocalDate dob;
