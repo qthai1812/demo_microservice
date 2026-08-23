@@ -32,3 +32,9 @@ spring:
           predicates:
             - Path=/post/**
           filters:
+
+        - id: file-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/file/**
+          filters:
