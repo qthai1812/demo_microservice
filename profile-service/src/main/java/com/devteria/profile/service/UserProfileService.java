@@ -1,26 +1,34 @@
 package com.devteria.profile.service;
 
 import com.devteria.profile.dto.request.UserProfileRequest;
+import com.devteria.profile.dto.respone.FileResponse;
 import com.devteria.profile.dto.respone.UserProfileRespone;
 import com.devteria.profile.entity.UserProfile;
+import com.devteria.profile.exception.AppException;
+import com.devteria.profile.exception.ErrorCode;
 import com.devteria.profile.mapper.UserProfileMapper;
 import com.devteria.profile.repository.UserProfileRepository;
+import com.devteria.profile.repository.httpclient.FileClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PUBLIC)
+@FieldDefaults(level = AccessLevel.PUBLIC,makeFinal = true)
 public class UserProfileService {
-    private final UserProfileRepository userProfileRepository;
-    private final UserProfileMapper userProfileMapper;
+    UserProfileRepository userProfileRepository;
+    UserProfileMapper userProfileMapper;
+    FileClient fileClient;
+
 
     public UserProfileRespone createUserProfile(UserProfileRequest request){
         UserProfile userProfile = userProfileMapper.toUserProfile(request);
@@ -29,15 +37,32 @@ public class UserProfileService {
     }
 
     public UserProfileRespone getUserProfileByUserId(String userId){
-        UserProfile userProfile = userProfileRepository.findUserProfileByUserId(userId);
+        UserProfile userProfile =userProfileRepository.findUserProfileByUserId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_PROFILE_NOT_FOUND));
         return userProfileMapper.toUserProfileRespone(userProfile);
     }
 
     public List<UserProfileRespone> getUserProfile(){
-
-        //var securityContextHolder = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().toList();
-        //log.info("scope: {}",securityContextHolder);
-
        return userProfileRepository.findAll().stream().map(userProfileMapper::toUserProfileRespone).toList();
     }
+
+    public UserProfileRespone updateAvatar(MultipartFile file){
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+
+        String userId = jwt.getClaim("userId");
+
+        UserProfile userProfile =userProfileRepository.findUserProfileByUserId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_PROFILE_NOT_FOUND));
+
+        FileResponse fileResponse = fileClient.uploadAvatar(file).getResult();
+
+        userProfile.setAvatar(fileResponse.getUrl());
+
+        return userProfileMapper.toUserProfileRespone(userProfile);
+
+    }
+
+
 }

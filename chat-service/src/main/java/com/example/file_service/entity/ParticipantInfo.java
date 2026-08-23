@@ -1,23 +1,17 @@
-package com.devteria.profile.dto.request;
+package com.example.file_service.entity;
 
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
-
-@Getter
-@Setter
+@Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserProfileRequest {
+public class ParticipantInfo {
     String userId;
-    String avatar;
     String username;
     String firstName;
     String lastName;
-    LocalDate dob;
-    String city;
+    String avatar;
 }

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     EmailClient emailClient;
-    private static String apikey="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";
+    private static String apikey="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";
 
     public EmailResponse sendEmail(EmailRequest request){
        return emailClient.sendEmail(apikey,request);

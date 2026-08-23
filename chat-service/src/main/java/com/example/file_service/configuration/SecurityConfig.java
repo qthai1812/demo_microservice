@@ -1,9 +1,8 @@
-package com.devteria.profile.configuration;
+package com.example.file_service.configuration;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,49 +10,44 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-@RequiredArgsConstructor
 @Configuration
-@Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
-@EnableMethodSecurity
 @EnableWebSecurity
+@EnableMethodSecurity
+@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
+    private static String[] PUBLIC_ENDPONTS={
+            "/media/download/**"
+    };
     CustomJwtDecoder customJwtDecoder;
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
-                           request.requestMatchers("/users").permitAll()
-                                  .anyRequest().authenticated())
-                .oauth2ResourceServer(request -> {
-                    request.jwt(jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)
-                            .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                    );
-                    request.authenticationEntryPoint(jwtAuthenticationEntryPoint);
-                })
-                .csrf(AbstractHttpConfigurer::disable);
+                request.requestMatchers(HttpMethod.GET,PUBLIC_ENDPONTS).permitAll()
+                        .anyRequest().authenticated()
+                ).oauth2ResourceServer(security ->
+                security.jwt(jwtConfigurer -> jwtConfigurer
+                        .decoder(customJwtDecoder)
+                        .jwtAuthenticationConverter(customJwtAuthenticationConverter()))
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+        ).csrf(AbstractHttpConfigurer::disable);
 
 
         return httpSecurity.build();
     }
-
-    @Bean
-    public JwtAuthenticationConverter jwtAuthenticationConverter(){
-        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+    JwtAuthenticationConverter customJwtAuthenticationConverter(){
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter =new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
-
         return jwtAuthenticationConverter;
     }
-
 
 }

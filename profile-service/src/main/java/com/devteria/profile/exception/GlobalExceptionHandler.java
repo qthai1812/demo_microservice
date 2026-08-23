@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = RuntimeException.class)
     ApiResponse<Void> runtimeExceptionHandler(RuntimeException runtimeException){
+
+        runtimeException.printStackTrace();
+
         return ApiResponse.<Void>builder()
                 .code(ErrorCode.SYSTEM_ERROR.getCode())
                 .message(ErrorCode.SYSTEM_ERROR.getMessage())

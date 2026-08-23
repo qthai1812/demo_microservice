@@ -13,7 +13,10 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserProfileRespone {
+    String id;
     String userId;
+    String username;
+    String avatar;
     String firstName;
     String lastName;
     LocalDate dob;
