@@ -33,7 +33,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     IdentityService identityService;
 
-    public static  final String[] PUBLIC_ENDPOINTS ={"^/identity/auth/.*","/identity/users","/notification/email"};
+    public static  final String[] PUBLIC_ENDPOINTS ={
+            "^/identity/auth/.*",
+            "/identity/users",
+            "/notification/email",
+            "/file/media/download/.*"
+    };
 
 
     @Override
