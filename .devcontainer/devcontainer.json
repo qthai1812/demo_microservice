@@ -5,9 +5,6 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "version": "latest",
       "dockerDashComposeVersion": "v2"
-    },
-    "ghcr.io/devcontainers/features/maven:1": {
-      "version": "latest"
     }
   },
   "customizations": {
@@ -45,6 +42,6 @@
       "onAutoForward": "silent"
     }
   },
-  "postCreateCommand": "mvn clean install -DskipTests && docker compose build",
+  "postCreateCommand": "mvn clean install -DskipTests",
   "remoteUser": "vscode"
 }
