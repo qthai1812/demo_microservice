@@ -45,6 +45,13 @@ services:
         value: "7474"
       - key: NEO4J_AUTH
         value: neo4j/12345678
+      # Tối ưu RAM cho Neo4j để chạy được trên 512MB
+      - key: NEO4J_server_memory_heap_initial__size
+        value: 100m
+      - key: NEO4J_server_memory_heap_max__size
+        value: 200m
+      - key: NEO4J_server_memory_pagecache_size
+        value: 100m
 
   # 4. Kafka (cho Event broker)
   - type: web
@@ -72,6 +79,9 @@ services:
         value: 1@kafka-broker:9093
       - key: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
         value: "1"
+      # Giới hạn RAM cho JVM của Kafka để chạy được trên 512MB
+      - key: KAFKA_JVM_PERFORMANCE_OPTS
+        value: "-Xms128m -Xmx200m"
 
   # ============================================================
   # PHẦN 2: CÁC DỊCH VỤ BACKEND (BACKEND SERVICES - FREE WEB SERVICES)
@@ -95,6 +105,9 @@ services:
         value: root
       - key: KAFKA_BOOTSTRAP_SERVERS
         value: kafka-broker:9092
+      # Giới hạn RAM JVM của Spring Boot
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms128m -Xmx200m"
 
   # 6. Profile Service
   - type: web
@@ -112,6 +125,8 @@ services:
         value: neo4j
       - key: SPRING_NEO4J_AUTHENTICATION_PASSWORD
         value: 12345678
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms128m -Xmx200m"
 
   # 7. Post Service
   - type: web
@@ -125,6 +140,8 @@ services:
         value: "8084"
       - key: SPRING_DATA_MONGODB_URI
         value: mongodb://root:root@mongodb-db:27017/post-service?authSource=admin
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms128m -Xmx200m"
 
   # 8. File Service
   - type: web
@@ -138,6 +155,8 @@ services:
         value: "8081"
       - key: SPRING_DATA_MONGODB_URI
         value: mongodb://root:root@mongodb-db:27017/file-service?authSource=admin
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms128m -Xmx200m"
 
   # 9. Chat Service
   - type: web
@@ -151,6 +170,8 @@ services:
         value: "8082"
       - key: SPRING_DATA_MONGODB_URI
         value: mongodb://root:root@mongodb-db:27017/chat-service?authSource=admin
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms128m -Xmx200m"
 
   # 10. Notification Service
   - type: web
@@ -166,6 +187,8 @@ services:
         value: mongodb://root:root@mongodb-db:27017/notification-service?authSource=admin
       - key: KAFKA_BOOTSTRAP_SERVERS
         value: kafka-broker:9092
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms128m -Xmx200m"
 
   # ============================================================
   # PHẦN 3: CỔNG GIAO TIẾP TRUNG TÂM (API GATEWAY - FREE PUBLIC WEB SERVICE)
@@ -193,3 +216,5 @@ services:
         value: http://chat-service:8082
       - key: NOTIFICATION_SERVICE_URL
         value: http://notification-service:8083
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms128m -Xmx200m"
