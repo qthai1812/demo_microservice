@@ -1,0 +1,77 @@
+﻿{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "identity-service",
+      "request": "launch",
+      "mainClass": "com.devteria.identity.IdentityServiceApplication",
+      "projectName": "identity-service",
+      "cwd": "${workspaceFolder}/identity-service"
+    },
+    {
+      "type": "java",
+      "name": "profile-service",
+      "request": "launch",
+      "mainClass": "com.devteria.profile.ProfileServiceApplication",
+      "projectName": "profile-service",
+      "cwd": "${workspaceFolder}/profile-service"
+    },
+    {
+      "type": "java",
+      "name": "post-service",
+      "request": "launch",
+      "mainClass": "com.devteria.post.PostServiceApplication",
+      "projectName": "post-service",
+      "cwd": "${workspaceFolder}/post-service"
+    },
+    {
+      "type": "java",
+      "name": "file-service",
+      "request": "launch",
+      "mainClass": "com.devteria.file.FileServiceApplication",
+      "projectName": "file-service",
+      "cwd": "${workspaceFolder}/file-service"
+    },
+    {
+      "type": "java",
+      "name": "chat-service",
+      "request": "launch",
+      "mainClass": "com.devteria.chat.ChatApplication",
+      "projectName": "chat-service",
+      "cwd": "${workspaceFolder}/chat-service"
+    },
+    {
+      "type": "java",
+      "name": "notification-service",
+      "request": "launch",
+      "mainClass": "com.devteria.notification.NotificationServiceApplication",
+      "projectName": "notification-service",
+      "cwd": "${workspaceFolder}/notification-service"
+    },
+    {
+      "type": "java",
+      "name": "api-gateway",
+      "request": "launch",
+      "mainClass": "com.devteria.gateway.GatewayServiceApplication",
+      "projectName": "api-gateway",
+      "cwd": "${workspaceFolder}/api-gateway"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Run All Services",
+      "configurations": [
+        "identity-service",
+        "profile-service",
+        "post-service",
+        "file-service",
+        "chat-service",
+        "notification-service",
+        "api-gateway"
+      ],
+      "preLaunchTask": "Start Infrastructure",
+      "stopAll": true
+    }
+  ]
+}

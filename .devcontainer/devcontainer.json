@@ -44,5 +44,6 @@
     }
   },
   "postCreateCommand": "mvn clean install -DskipTests",
+  "postStartCommand": "docker compose -f docker-compose.infra.yml up -d",
   "remoteUser": "vscode"
 }

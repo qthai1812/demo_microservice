@@ -1,0 +1,106 @@
+﻿{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Infrastructure",
+      "type": "shell",
+      "command": "docker compose -f docker-compose.infra.yml up -d",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared",
+        "group": "infra"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Stop Infrastructure",
+      "type": "shell",
+      "command": "docker compose -f docker-compose.infra.yml down",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "identity-service",
+      "type": "shell",
+      "command": "./mvnw spring-boot:run",
+      "options": { "cwd": "${workspaceFolder}/identity-service" },
+      "isBackground": true,
+      "presentation": { "echo": true, "reveal": "always", "panel": "dedicated", "group": "services", "showReuseMessage": false },
+      "problemMatcher": [{ "pattern": { "regexp": "^$" }, "background": { "activeOnStart": true, "beginsPattern": "^.*Starting.*$", "endsPattern": "^.*Started.*in.*seconds.*$" } }]
+    },
+    {
+      "label": "profile-service",
+      "type": "shell",
+      "command": "./mvnw spring-boot:run",
+      "options": { "cwd": "${workspaceFolder}/profile-service" },
+      "isBackground": true,
+      "presentation": { "echo": true, "reveal": "always", "panel": "dedicated", "group": "services", "showReuseMessage": false },
+      "problemMatcher": [{ "pattern": { "regexp": "^$" }, "background": { "activeOnStart": true, "beginsPattern": "^.*Starting.*$", "endsPattern": "^.*Started.*in.*seconds.*$" } }]
+    },
+    {
+      "label": "post-service",
+      "type": "shell",
+      "command": "./mvnw spring-boot:run",
+      "options": { "cwd": "${workspaceFolder}/post-service" },
+      "isBackground": true,
+      "presentation": { "echo": true, "reveal": "always", "panel": "dedicated", "group": "services", "showReuseMessage": false },
+      "problemMatcher": [{ "pattern": { "regexp": "^$" }, "background": { "activeOnStart": true, "beginsPattern": "^.*Starting.*$", "endsPattern": "^.*Started.*in.*seconds.*$" } }]
+    },
+    {
+      "label": "file-service",
+      "type": "shell",
+      "command": "./mvnw spring-boot:run",
+      "options": { "cwd": "${workspaceFolder}/file-service" },
+      "isBackground": true,
+      "presentation": { "echo": true, "reveal": "always", "panel": "dedicated", "group": "services", "showReuseMessage": false },
+      "problemMatcher": [{ "pattern": { "regexp": "^$" }, "background": { "activeOnStart": true, "beginsPattern": "^.*Starting.*$", "endsPattern": "^.*Started.*in.*seconds.*$" } }]
+    },
+    {
+      "label": "chat-service",
+      "type": "shell",
+      "command": "./mvnw spring-boot:run",
+      "options": { "cwd": "${workspaceFolder}/chat-service" },
+      "isBackground": true,
+      "presentation": { "echo": true, "reveal": "always", "panel": "dedicated", "group": "services", "showReuseMessage": false },
+      "problemMatcher": [{ "pattern": { "regexp": "^$" }, "background": { "activeOnStart": true, "beginsPattern": "^.*Starting.*$", "endsPattern": "^.*Started.*in.*seconds.*$" } }]
+    },
+    {
+      "label": "notification-service",
+      "type": "shell",
+      "command": "./mvnw spring-boot:run",
+      "options": { "cwd": "${workspaceFolder}/notification-service" },
+      "isBackground": true,
+      "presentation": { "echo": true, "reveal": "always", "panel": "dedicated", "group": "services", "showReuseMessage": false },
+      "problemMatcher": [{ "pattern": { "regexp": "^$" }, "background": { "activeOnStart": true, "beginsPattern": "^.*Starting.*$", "endsPattern": "^.*Started.*in.*seconds.*$" } }]
+    },
+    {
+      "label": "api-gateway",
+      "type": "shell",
+      "command": "./mvnw spring-boot:run",
+      "options": { "cwd": "${workspaceFolder}/api-gateway" },
+      "isBackground": true,
+      "presentation": { "echo": true, "reveal": "always", "panel": "dedicated", "group": "services", "showReuseMessage": false },
+      "problemMatcher": [{ "pattern": { "regexp": "^$" }, "background": { "activeOnStart": true, "beginsPattern": "^.*Starting.*$", "endsPattern": "^.*Started.*in.*seconds.*$" } }]
+    },
+    {
+      "label": "Run All Services",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Start Infrastructure",
+        "identity-service",
+        "profile-service",
+        "post-service",
+        "file-service",
+        "chat-service",
+        "notification-service",
+        "api-gateway"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

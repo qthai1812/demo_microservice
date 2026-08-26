@@ -10,42 +10,42 @@ spring:
         # identity-service: context-path=/identity, port=8080
         # Request: /identity/auth/token → forward: /identity/auth/token ✅ (giữ nguyên, không strip)
         - id: identity-service
-          uri: http://identity-service:8080
+          uri: "${IDENTITY_SERVICE_URL:http://localhost:8080}"
           predicates:
             - Path=/identity/**
 
         # profile-service: context-path=/profile, port=8085
         # Request: /profile/users → forward: /profile/users ✅
         - id: profile-service
-          uri: http://profile-service:8085
+          uri: "${PROFILE_SERVICE_URL:http://localhost:8085}"
           predicates:
             - Path=/profile/**
 
         # notification-service: context-path=/notification, port=8083
         # Request: /notification/email → forward: /notification/email ✅
         - id: notification-service
-          uri: http://notification-service:8083
+          uri: "${NOTIFICATION_SERVICE_URL:http://localhost:8083}"
           predicates:
             - Path=/notification/**
 
         # post-service: context-path=/post, port=8084
         # Request: /post/my_post → forward: /post/my_post ✅
         - id: post-service
-          uri: http://post-service:8084
+          uri: "${POST_SERVICE_URL:http://localhost:8084}"
           predicates:
             - Path=/post/**
 
         # file-service: context-path=/file, port=8081
         # Request: /file/media/upload → forward: /file/media/upload ✅
         - id: file-service
-          uri: http://file-service:8081
+          uri: "${FILE_SERVICE_URL:http://localhost:8081}"
           predicates:
             - Path=/file/**
 
         # chat-service: context-path=/chat, port=8082
         # Request: /chat/messages → forward: /chat/messages ✅
         - id: chat-service
-          uri: http://chat-service:8082
+          uri: "${CHAT_SERVICE_URL:http://localhost:8082}"
           predicates:
             - Path=/chat/**
 
