@@ -80,9 +80,12 @@ public class AuthenticationService {
 
         if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
-        var token = generateToken(user);
+        var tokenInfo = generateToken(user);
 
-        return AuthenticationResponse.builder().token(token).build();
+        return AuthenticationResponse.builder()
+                .token(tokenInfo.token())
+                .expiryTime(tokenInfo.expiryDate())
+                .build();
     }
 
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
@@ -117,20 +120,24 @@ public class AuthenticationService {
         var user =
                 userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
 
-        var token = generateToken(user);
+        var tokenInfo = generateToken(user);
 
-        return AuthenticationResponse.builder().token(token).build();
+        return AuthenticationResponse.builder()
+                .token(tokenInfo.token())
+                .expiryTime(tokenInfo.expiryDate())
+                .build();
     }
 
-    private String generateToken(User user) {
+    private TokenInfo generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
+
+        Date expiryDate = new Date(Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli());
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getId())
                 .issuer("devteria.com")
                 .issueTime(new Date())
-                .expirationTime(new Date(
-                        Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()))
+                .expirationTime(expiryDate)
                 .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
                 .build();
@@ -141,7 +148,7 @@ public class AuthenticationService {
 
         try {
             jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
-            return jwsObject.serialize();
+            return new TokenInfo(jwsObject.serialize(), expiryDate);
         } catch (JOSEException e) {
             log.error("Cannot create token", e);
             throw new RuntimeException(e);

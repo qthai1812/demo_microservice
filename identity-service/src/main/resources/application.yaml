@@ -21,3 +21,5 @@ spring:
 
 jwt:
   signerKey: "${JWT_SIGNER_KEY:1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij}"
+  valid-duration: 3600        # 1 giờ (seconds)
+  refreshable-duration: 86400 # 24 giờ (seconds)
