@@ -3,16 +3,14 @@ package com.devteria.identity.service;
 import java.util.HashSet;
 import java.util.List;
 
-import com.devteria.event.dto.NotificationEvent;
-import com.devteria.identity.dto.response.UserProfileRespone;
-import com.devteria.identity.mapper.UserProfileMapper;
-import com.devteria.identity.repository.httpclient.ProfileClient;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.devteria.event.dto.NotificationEvent;
 import com.devteria.identity.constant.PredefinedRole;
 import com.devteria.identity.dto.request.UserCreationRequest;
 import com.devteria.identity.dto.request.UserUpdateRequest;
@@ -22,14 +20,15 @@ import com.devteria.identity.entity.User;
 import com.devteria.identity.exception.AppException;
 import com.devteria.identity.exception.ErrorCode;
 import com.devteria.identity.mapper.UserMapper;
+import com.devteria.identity.mapper.UserProfileMapper;
 import com.devteria.identity.repository.RoleRepository;
 import com.devteria.identity.repository.UserRepository;
+import com.devteria.identity.repository.httpclient.ProfileClient;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +43,7 @@ public class UserService {
     ProfileClient profileClient;
     KafkaTemplate<String, NotificationEvent> kafkaTemplate;
 
+    @Transactional(rollbackFor = Exception.class)
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
 
@@ -58,14 +58,29 @@ public class UserService {
 
         var userProfileRequest = userProfileMapper.toProfileCreationRequest(request);
         userProfileRequest.setUserId(user.getId());
-        profileClient.createUserProfile(userProfileRequest);
 
-        kafkaTemplate.send("onboard-successfull", NotificationEvent.builder()
-                        .channel("Email")
-                        .recipient(request.getEmail())
-                        .subject("Create account user successful")
-                        .body("Hello. This is my first transactional email sent from bookthairia")
-                        .build());
+        try {
+            profileClient.createUserProfile(userProfileRequest);
+        } catch (feign.FeignException e) {
+            log.error("Failed to create profile for user {}", user.getId(), e);
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
+
+        kafkaTemplate
+                .send(
+                        "notification-delivery",
+                        NotificationEvent.builder()
+                                .channel("Email")
+                                .recipient(request.getEmail())
+                                .subject("Create account user successful")
+                                .body("Hello. This is my first transactional email sent from bookthairia")
+                                .build())
+                .whenComplete((result, ex) -> {
+                    if (ex != null) {
+                        log.error("Failed to send Kafka event for user: {}", user.getId(), ex);
+                    }
+                });
+
         return userMapper.toUserResponse(user);
     }
 
@@ -96,7 +111,7 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
- //   @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         log.info("In method get Users");
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();

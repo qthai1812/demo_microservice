@@ -1,0 +1,9 @@
+app = "bookteria-file"
+primary_region = "sin"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[mounts]
+  source = "file_storage"
+  destination = "/app/uploads"

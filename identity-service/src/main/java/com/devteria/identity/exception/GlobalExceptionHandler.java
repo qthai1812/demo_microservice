@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     private static final String MIN_ATTRIBUTE = "min";
 
     @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception) {
+    ResponseEntity<ApiResponse> handlingException(Exception exception) {
         log.error("Exception: ", exception);
         ApiResponse apiResponse = new ApiResponse();
 
@@ -54,9 +54,21 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(value = NullPointerException.class)
+    ResponseEntity<ApiResponse> handlingNullPointerException(NullPointerException exception) {
+        ErrorCode errorCode = ErrorCode.ERROR_LOGIN;
+
+        return ResponseEntity.status(errorCode.getStatusCode())
+                .body(ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build());
+    }
+
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse> handlingValidation(MethodArgumentNotValidException exception) {
-        String enumKey = exception.getFieldError().getDefaultMessage();
+        var fieldError = exception.getFieldError();
+        String enumKey = fieldError != null ? fieldError.getDefaultMessage() : ErrorCode.INVALID_KEY.name();
 
         ErrorCode errorCode = ErrorCode.INVALID_KEY;
         Map<String, Object> attributes = null;

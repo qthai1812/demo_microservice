@@ -29,10 +29,12 @@ public class ApplicationInitConfig {
     PasswordEncoder passwordEncoder;
 
     @NonFinal
-    static final String ADMIN_USER_NAME = "admin";
+    @org.springframework.beans.factory.annotation.Value("${app.admin.username:admin}")
+    String ADMIN_USER_NAME;
 
     @NonFinal
-    static final String ADMIN_PASSWORD = "admin";
+    @org.springframework.beans.factory.annotation.Value("${app.admin.password:admin}")
+    String ADMIN_PASSWORD;
 
     @Bean
     @ConditionalOnProperty(

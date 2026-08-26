@@ -1,0 +1,316 @@
+services:
+  # ============================================================
+  # PHẦN 1: HẠ TẦNG CƠ SỞ DỮ LIỆU (INFRASTRUCTURE - FREE WEB SERVICES)
+  # ============================================================
+
+  # 1. MySQL (cho identity-service)
+  - type: web
+    name: mysql-db
+    runtime: image
+    image:
+      url: mysql:8.0.40-debian
+    plan: free
+    envVars:
+      - key: PORT
+        value: "3306"
+      - key: MYSQL_ROOT_PASSWORD
+        value: root
+      - key: MYSQL_DATABASE
+        value: bookteria_identity
+
+  # 2. MongoDB (cho post, file, chat, notification)
+  - type: web
+    name: mongodb-db
+    runtime: image
+    image:
+      url: mongo:8.0.1-noble
+    plan: free
+    envVars:
+      - key: PORT
+        value: "27017"
+      - key: MONGO_INITDB_ROOT_USERNAME
+        value: root
+      - key: MONGO_INITDB_ROOT_PASSWORD
+        value: root
+
+  # 3. Neo4j (cho profile-service)
+  - type: web
+    name: neo4j-db
+    runtime: image
+    image:
+      url: neo4j:5.24.2
+    plan: free
+    envVars:
+      - key: PORT
+        value: "7474"
+      - key: NEO4J_AUTH
+        value: neo4j/12345678
+      # Tối ưu RAM cho Neo4j để chạy được trên 512MB
+      - key: NEO4J_server_memory_heap_initial__size
+        value: 100m
+      - key: NEO4J_server_memory_heap_max__size
+        value: 200m
+      - key: NEO4J_server_memory_pagecache_size
+        value: 100m
+
+  # 4. Kafka (cho Event broker)
+  - type: web
+    name: kafka-broker
+    runtime: docker
+    dockerContext: ./kafka-broker
+    dockerfilePath: ./kafka-broker/Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: "9092"
+      - key: KAFKA_NODE_ID
+        value: "1"
+      - key: KAFKA_PROCESS_ROLES
+        value: broker,controller
+      - key: KAFKA_LISTENERS
+        value: PLAINTEXT://:9092,CONTROLLER://:9093
+      # Trích xuất host động của chính nó (đã chứa mã hash của Render)
+      - key: KAFKA_HOST
+        fromService:
+          name: kafka-broker
+          type: web
+          property: host
+      - key: KAFKA_CONTROLLER_LISTENER_NAMES
+        value: CONTROLLER
+      - key: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+        value: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      # Thay đổi thành loopback IP để Kafka tự kết nối nội bộ đến chính nó khi boot, không thông qua DNS Render
+      - key: KAFKA_CONTROLLER_QUORUM_VOTERS
+        value: 1@127.0.0.1:9093
+      - key: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+        value: "1"
+      # Giới hạn RAM cho JVM của Kafka để chạy được trên 512MB
+      - key: KAFKA_JVM_PERFORMANCE_OPTS
+        value: "-Xms128m -Xmx200m"
+      # Tối ưu hóa dung lượng Buffer để tránh OOM trong container 512MB
+      - key: KAFKA_LOG_CLEANER_DEDUPE_BUFFER_SIZE
+        value: "10485760"
+
+  # ============================================================
+  # PHẦN 2: CÁC DỊCH VỤ BACKEND (BACKEND SERVICES - FREE WEB SERVICES)
+  # ============================================================
+
+  # 5. Identity Service
+  - type: web
+    name: identity-service
+    runtime: docker
+    dockerContext: ./identity-service
+    dockerfilePath: ./identity-service/Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: MYSQL_HOST
+        fromService:
+          name: mysql-db
+          type: web
+          property: host
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://${MYSQL_HOST}:3306/bookteria_identity?useSSL=false
+      - key: SPRING_DATASOURCE_USERNAME
+        value: root
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: root
+      - key: KAFKA_HOST
+        fromService:
+          name: kafka-broker
+          type: web
+          property: host
+      - key: KAFKA_BOOTSTRAP_SERVERS
+        value: ${KAFKA_HOST}:9092
+      # Giới hạn RAM JVM của Spring Boot
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms128m -Xmx200m"
+
+  # 6. Profile Service
+  - type: web
+    name: profile-service
+    runtime: docker
+    dockerContext: ./profile-service
+    dockerfilePath: ./profile-service/Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: "8085"
+      - key: NEO4J_HOST
+        fromService:
+          name: neo4j-db
+          type: web
+          property: host
+      - key: SPRING_NEO4J_URI
+        value: bolt://${NEO4J_HOST}:7687
+      - key: SPRING_NEO4J_AUTHENTICATION_USERNAME
+        value: neo4j
+      - key: SPRING_NEO4J_AUTHENTICATION_PASSWORD
+        value: 12345678
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms128m -Xmx200m"
+
+  # 7. Post Service
+  - type: web
+    name: post-service
+    runtime: docker
+    dockerContext: ./post-service
+    dockerfilePath: ./post-service/Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: "8084"
+      - key: MONGODB_HOST
+        fromService:
+          name: mongodb-db
+          type: web
+          property: host
+      - key: SPRING_DATA_MONGODB_URI
+        value: mongodb://root:root@${MONGODB_HOST}:27017/post-service?authSource=admin
+      - key: PROFILE_SERVICE_HOST
+        fromService:
+          name: profile-service
+          type: web
+          property: host
+      - key: PROFILE_SERVICE_URL
+        value: http://${PROFILE_SERVICE_HOST}:8085
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms128m -Xmx200m"
+
+  # 8. File Service
+  - type: web
+    name: file-service
+    runtime: docker
+    dockerContext: ./file-service
+    dockerfilePath: ./file-service/Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: "8081"
+      - key: MONGODB_HOST
+        fromService:
+          name: mongodb-db
+          type: web
+          property: host
+      - key: SPRING_DATA_MONGODB_URI
+        value: mongodb://root:root@${MONGODB_HOST}:27017/file-service?authSource=admin
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms128m -Xmx200m"
+
+  # 9. Chat Service
+  - type: web
+    name: chat-service
+    runtime: docker
+    dockerContext: ./chat-service
+    dockerfilePath: ./chat-service/Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: "8082"
+      - key: MONGODB_HOST
+        fromService:
+          name: mongodb-db
+          type: web
+          property: host
+      - key: SPRING_DATA_MONGODB_URI
+        value: mongodb://root:root@${MONGODB_HOST}:27017/chat-service?authSource=admin
+      - key: PROFILE_SERVICE_HOST
+        fromService:
+          name: profile-service
+          type: web
+          property: host
+      - key: PROFILE_SERVICE_URL
+        value: http://${PROFILE_SERVICE_HOST}:8085
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms128m -Xmx200m"
+
+  # 10. Notification Service
+  - type: web
+    name: notification-service
+    runtime: docker
+    dockerContext: ./notification-service
+    dockerfilePath: ./notification-service/Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: "8083"
+      - key: MONGODB_HOST
+        fromService:
+          name: mongodb-db
+          type: web
+          property: host
+      - key: SPRING_DATA_MONGODB_URI
+        value: mongodb://root:root@${MONGODB_HOST}:27017/notification-service?authSource=admin
+      - key: KAFKA_HOST
+        fromService:
+          name: kafka-broker
+          type: web
+          property: host
+      - key: KAFKA_BOOTSTRAP_SERVERS
+        value: ${KAFKA_HOST}:9092
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms128m -Xmx200m"
+      # Khai báo yêu cầu Render hỏi API Key của người dùng khi deploy Blueprint (thêm value mặc định trống để thỏa mãn validator)
+      - key: BREVO_API_KEY
+        value: ""
+        sync: true
+
+  # ============================================================
+  # PHẦN 3: CỔNG GIAO TIẾP TRUNG TÂM (API GATEWAY - FREE PUBLIC WEB SERVICE)
+  # ============================================================
+
+  # 11. API Gateway
+  - type: web
+    name: api-gateway
+    runtime: docker
+    dockerContext: ./api-gateway
+    dockerfilePath: ./api-gateway/Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: "8888"
+      - key: IDENTITY_SERVICE_HOST
+        fromService:
+          name: identity-service
+          type: web
+          property: host
+      - key: IDENTITY_SERVICE_URL
+        value: http://${IDENTITY_SERVICE_HOST}:8080
+      - key: PROFILE_SERVICE_HOST
+        fromService:
+          name: profile-service
+          type: web
+          property: host
+      - key: PROFILE_SERVICE_URL
+        value: http://${PROFILE_SERVICE_HOST}:8085
+      - key: POST_SERVICE_HOST
+        fromService:
+          name: post-service
+          type: web
+          property: host
+      - key: POST_SERVICE_URL
+        value: http://${POST_SERVICE_HOST}:8084
+      - key: FILE_SERVICE_HOST
+        fromService:
+          name: file-service
+          type: web
+          property: host
+      - key: FILE_SERVICE_URL
+        value: http://${FILE_SERVICE_HOST}:8081
+      - key: CHAT_SERVICE_HOST
+        fromService:
+          name: chat-service
+          type: web
+          property: host
+      - key: CHAT_SERVICE_URL
+        value: http://${CHAT_SERVICE_HOST}:8082
+      - key: NOTIFICATION_SERVICE_HOST
+        fromService:
+          name: notification-service
+          type: web
+          property: host
+      - key: NOTIFICATION_SERVICE_URL
+        value: http://${NOTIFICATION_SERVICE_HOST}:8083
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms128m -Xmx200m"

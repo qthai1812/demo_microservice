@@ -1,0 +1,5 @@
+app = "bookteria-notification"
+primary_region = "sin"
+
+[build]
+  dockerfile = "Dockerfile"

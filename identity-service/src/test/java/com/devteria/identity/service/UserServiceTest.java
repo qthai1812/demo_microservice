@@ -46,15 +46,10 @@ public class UserServiceTest {
                 .password("12345678")
                 .build();
 
-        userResponse = UserResponse.builder()
-                .id("cf0600f538b3")
-                .username("john")
-                .build();
+        userResponse =
+                UserResponse.builder().id("cf0600f538b3").username("john").build();
 
-        user = User.builder()
-                .id("cf0600f538b3")
-                .username("john")
-                .build();
+        user = User.builder().id("cf0600f538b3").username("john").build();
     }
 
     @Test
@@ -66,7 +61,6 @@ public class UserServiceTest {
         // WHEN
         var response = userService.createUser(request);
         // THEN
-
 
     }
 

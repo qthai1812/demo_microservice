@@ -11,8 +11,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ApiResponse<T> {
     @Builder.Default
-    int code=1000;
+    int code = 1000;
+
     @Builder.Default
-    String message="Success";
+    String message = "Success";
+
     T result;
 }

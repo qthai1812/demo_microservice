@@ -1,15 +1,17 @@
 package com.devteria.profile.configuration;
 
-import feign.RequestInterceptor;
-import feign.RequestTemplate;
 import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
+
 @Component
-public class FeignClientInterceptor implements RequestInterceptor{
+public class FeignClientInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate requestTemplate) {
         // Lấy thông tin của request hiện tại đang gọi vào service

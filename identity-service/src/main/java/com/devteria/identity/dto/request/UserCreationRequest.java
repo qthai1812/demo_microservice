@@ -4,8 +4,6 @@ import java.time.LocalDate;
 
 import jakarta.validation.constraints.Size;
 
-import com.devteria.identity.validator.DobConstraint;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

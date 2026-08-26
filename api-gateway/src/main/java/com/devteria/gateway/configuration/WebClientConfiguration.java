@@ -3,6 +3,7 @@ package com.devteria.gateway.configuration;
 import com.devteria.gateway.repository.IdentityClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
@@ -14,10 +15,13 @@ import java.util.List;
 
 @Configuration
 public class WebClientConfiguration {
+    @Value("${app.services.identity.url:http://localhost:8080/identity}")
+    String identityServiceUrl;
+
     @Bean
     WebClient webClient(){
         return WebClient.builder()
-                .baseUrl("http://localhost:8080/identity")
+                .baseUrl(identityServiceUrl)
                 .build();
     }
     @Bean

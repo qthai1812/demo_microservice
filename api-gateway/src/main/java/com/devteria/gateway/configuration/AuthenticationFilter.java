@@ -34,10 +34,18 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     IdentityService identityService;
 
     public static  final String[] PUBLIC_ENDPOINTS ={
-            "^/identity/auth/.*",
-            "/identity/users",
+            "/identity/auth/token",
+            "/identity/auth/introspect",
+            "/identity/auth/logout",
+            "/identity/auth/refresh",
+            "/identity/users/registration",
             "/notification/email",
-            "/file/media/download/.*"
+            "/file/media/download/.*",
+            "/swagger-ui.html",
+            "/swagger-ui/.*",
+            "/webjars/swagger-ui/.*",
+            "/v3/api-docs/.*",
+            "/.*/v3/api-docs"
     };
 
 
@@ -62,12 +70,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                         .token(token)
                         .build()
         ).flatMap(introspectResponseApiResponse -> {
-            if(introspectResponseApiResponse.getResult().isValid())
+            var result = introspectResponseApiResponse.getResult();
+            if(result != null && result.isValid())
                 return chain.filter(exchange);
             else
                 return unauthenticated(exchange.getResponse());
-
-
         }).onErrorResume(throwable -> {
             log.error("Lỗi thực sự khi kết nối tới Identity Service:", throwable);
             return unauthenticated(exchange.getResponse());
@@ -76,7 +83,13 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     }
 
     boolean isPublicEndpoints(ServerHttpRequest serverHttpRequest){
-        return Arrays.stream(PUBLIC_ENDPOINTS).anyMatch(s -> serverHttpRequest.getURI().getPath().matches(s));
+        String path = serverHttpRequest.getURI().getPath();
+        return Arrays.stream(PUBLIC_ENDPOINTS).anyMatch(pattern -> {
+            if (pattern.contains(".*")) {
+                return path.matches(pattern);
+            }
+            return path.equals(pattern);
+        });
     }
 
     @Override
