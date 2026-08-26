@@ -197,6 +197,9 @@ services:
         value: kafka-broker:9092
       - key: JAVA_TOOL_OPTIONS
         value: "-Xms128m -Xmx200m"
+      # Khai báo yêu cầu Render hỏi API Key của người dùng khi deploy Blueprint
+      - key: BREVO_API_KEY
+        sync: true
 
   # ============================================================
   # PHẦN 3: CỔNG GIAO TIẾP TRUNG TÂM (API GATEWAY - FREE PUBLIC WEB SERVICE)
