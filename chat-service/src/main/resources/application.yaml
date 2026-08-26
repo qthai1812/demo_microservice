@@ -3,6 +3,11 @@ server:
   servlet:
     context-path: /chat
 
+app:
+  services:
+    profile:
+      url: "${PROFILE_SERVICE_URL:http://profile-service:8085}"
+
 spring:
   application:
     name: chat-service

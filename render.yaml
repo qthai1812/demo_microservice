@@ -82,6 +82,9 @@ services:
       # Giới hạn RAM cho JVM của Kafka để chạy được trên 512MB
       - key: KAFKA_JVM_PERFORMANCE_OPTS
         value: "-Xms128m -Xmx200m"
+      # Tối ưu hóa dung lượng Buffer để tránh OOM trong container 512MB
+      - key: KAFKA_LOG_CLEANER_DEDUPE_BUFFER_SIZE
+        value: "10485760"
 
   # ============================================================
   # PHẦN 2: CÁC DỊCH VỤ BACKEND (BACKEND SERVICES - FREE WEB SERVICES)
@@ -140,6 +143,8 @@ services:
         value: "8084"
       - key: SPRING_DATA_MONGODB_URI
         value: mongodb://root:root@mongodb-db:27017/post-service?authSource=admin
+      - key: PROFILE_SERVICE_URL
+        value: http://profile-service:8085
       - key: JAVA_TOOL_OPTIONS
         value: "-Xms128m -Xmx200m"
 
@@ -170,6 +175,8 @@ services:
         value: "8082"
       - key: SPRING_DATA_MONGODB_URI
         value: mongodb://root:root@mongodb-db:27017/chat-service?authSource=admin
+      - key: PROFILE_SERVICE_URL
+        value: http://profile-service:8085
       - key: JAVA_TOOL_OPTIONS
         value: "-Xms128m -Xmx200m"
 
