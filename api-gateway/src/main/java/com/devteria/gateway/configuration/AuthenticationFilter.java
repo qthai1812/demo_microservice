@@ -34,7 +34,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     IdentityService identityService;
 
     public static  final String[] PUBLIC_ENDPOINTS ={
-            "^/identity/auth/.*",
+            "/identity/auth/token",
+            "/identity/auth/introspect",
+            "/identity/auth/logout",
+            "/identity/auth/refresh",
             "/identity/users",
             "/notification/email",
             "/file/media/download/.*"
@@ -76,7 +79,13 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     }
 
     boolean isPublicEndpoints(ServerHttpRequest serverHttpRequest){
-        return Arrays.stream(PUBLIC_ENDPOINTS).anyMatch(s -> serverHttpRequest.getURI().getPath().matches(s));
+        String path = serverHttpRequest.getURI().getPath();
+        return Arrays.stream(PUBLIC_ENDPOINTS).anyMatch(pattern -> {
+            if (pattern.contains(".*")) {
+                return path.matches(pattern);
+            }
+            return path.equals(pattern);
+        });
     }
 
     @Override

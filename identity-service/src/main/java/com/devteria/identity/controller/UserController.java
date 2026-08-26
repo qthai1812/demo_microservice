@@ -2,7 +2,6 @@ package com.devteria.identity.controller;
 
 import java.util.List;
 
-import com.devteria.identity.dto.response.UserProfileRespone;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +31,7 @@ public class UserController {
                 .result(userService.createUser(request))
                 .build();
     }
+
     @GetMapping
     ApiResponse<List<UserResponse>> getUsers() {
         return ApiResponse.<List<UserResponse>>builder()

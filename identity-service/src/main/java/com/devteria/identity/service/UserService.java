@@ -3,16 +3,13 @@ package com.devteria.identity.service;
 import java.util.HashSet;
 import java.util.List;
 
-import com.devteria.event.dto.NotificationEvent;
-import com.devteria.identity.dto.response.UserProfileRespone;
-import com.devteria.identity.mapper.UserProfileMapper;
-import com.devteria.identity.repository.httpclient.ProfileClient;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.devteria.event.dto.NotificationEvent;
 import com.devteria.identity.constant.PredefinedRole;
 import com.devteria.identity.dto.request.UserCreationRequest;
 import com.devteria.identity.dto.request.UserUpdateRequest;
@@ -22,14 +19,15 @@ import com.devteria.identity.entity.User;
 import com.devteria.identity.exception.AppException;
 import com.devteria.identity.exception.ErrorCode;
 import com.devteria.identity.mapper.UserMapper;
+import com.devteria.identity.mapper.UserProfileMapper;
 import com.devteria.identity.repository.RoleRepository;
 import com.devteria.identity.repository.UserRepository;
+import com.devteria.identity.repository.httpclient.ProfileClient;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +58,9 @@ public class UserService {
         userProfileRequest.setUserId(user.getId());
         profileClient.createUserProfile(userProfileRequest);
 
-        kafkaTemplate.send("onboard-successfull", NotificationEvent.builder()
+        kafkaTemplate.send(
+                "onboard-successfull",
+                NotificationEvent.builder()
                         .channel("Email")
                         .recipient(request.getEmail())
                         .subject("Create account user successful")
@@ -96,7 +96,7 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
- //   @PreAuthorize("hasRole('ADMIN')")
+    //   @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         log.info("In method get Users");
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();

@@ -1,0 +1,50 @@
+{
+  "name": "Bookteria Microservices",
+  "image": "mcr.microsoft.com/devcontainers/java:21",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "dockerDashComposeVersion": "v2"
+    },
+    "ghcr.io/devcontainers/features/maven:1": {
+      "version": "latest"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "java.format.settings.url": ".vscode/formatter.xml"
+      },
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-spring-boot-dashboard",
+        "vmware.vscode-spring-boot",
+        "vmware.vscode-boot-dev-pack",
+        "ms-azuretools.vscode-docker",
+        "redhat.vscode-xml",
+        "redhat.vscode-yaml"
+      ]
+    }
+  },
+  "forwardPorts": [
+    8888, 
+    8080, 8081, 8082, 8083, 8084, 8085, 
+    3306, 27017, 7474, 7687, 9092, 9094
+  ],
+  "portsAttributes": {
+    "8888": {
+      "label": "API Gateway",
+      "onAutoForward": "notify"
+    },
+    "3306": {
+      "label": "MySQL",
+      "onAutoForward": "silent"
+    },
+    "27017": {
+      "label": "MongoDB",
+      "onAutoForward": "silent"
+    }
+  },
+  "postCreateCommand": "mvn clean install -DskipTests && docker compose build",
+  "remoteUser": "vscode"
+}

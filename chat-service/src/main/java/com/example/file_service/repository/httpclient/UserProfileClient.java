@@ -8,7 +8,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(value = "profile-service",url = "http://localhost:8081/profile",configuration = FeignClientInterceptor.class)
+@FeignClient(value = "profile-service",url = "http://profile-service:8081",configuration = FeignClientInterceptor.class)
 public interface UserProfileClient {
     @GetMapping("/users/{userId}")
     ApiResponse<UserProfileRespone> getUserProfile(@PathVariable String userId);

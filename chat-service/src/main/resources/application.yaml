@@ -1,5 +1,5 @@
 server:
-  port: 8085
+  port: 8082
   servlet:
     context-path: /chat
 
@@ -8,5 +8,8 @@ spring:
     name: chat-service
   data:
     mongodb:
-      uri: mongodb://root:root@localhost:27017/chat-service?authSource=admin
+      uri: "${SPRING_DATA_MONGODB_URI:mongodb://root:root@localhost:27017/chat-service?authSource=admin}"
       auto-index-creation: true
+
+jwt:
+  signerKey: "${JWT_SIGNER_KEY:1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij}"

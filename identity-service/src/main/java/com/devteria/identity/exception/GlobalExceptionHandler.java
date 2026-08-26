@@ -54,6 +54,17 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(value = NullPointerException.class)
+    ResponseEntity<ApiResponse> handlingNullPointerException(NullPointerException exception) {
+        ErrorCode errorCode = ErrorCode.ERROR_LOGIN;
+
+        return ResponseEntity.status(errorCode.getStatusCode())
+                .body(ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build());
+    }
+
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse> handlingValidation(MethodArgumentNotValidException exception) {
         String enumKey = exception.getFieldError().getDefaultMessage();

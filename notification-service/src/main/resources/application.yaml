@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8083
   servlet:
     context-path: /notification
 
@@ -8,11 +8,11 @@ spring:
     name: notification-service
   data:
     mongodb:
-      uri: mongodb://root:root@localhost:27017/notification-service?authSource=admin
+      uri: "${SPRING_DATA_MONGODB_URI:mongodb://root:root@localhost:27017/notification-service?authSource=admin}"
 
   kafka:
     consumer:
-      bootstrap-servers: localhost:9094
+      bootstrap-servers: "${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}"
       group-id: notification-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -22,4 +22,5 @@ spring:
         spring.json.use.type.headers: false
         spring.json.value.default.type: com.example.event.dto.NotificationEvent
 
-
+jwt:
+  signerKey: "${JWT_SIGNER_KEY:1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij}"

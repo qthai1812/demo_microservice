@@ -4,8 +4,6 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,14 +42,10 @@ public class UserControllerTest {
     void initData() {
         dob = LocalDate.of(1990, 1, 1);
 
-        request = UserCreationRequest.builder()
-                .username("john")
-                .build();
+        request = UserCreationRequest.builder().username("john").build();
 
-        userResponse = UserResponse.builder()
-                .id("cf0600f538b3")
-                .username("john")
-                .build();
+        userResponse =
+                UserResponse.builder().id("cf0600f538b3").username("john").build();
     }
 
     @Test
@@ -62,7 +56,7 @@ public class UserControllerTest {
         objectMapper.registerModule(new JavaTimeModule());
         String content = objectMapper.writeValueAsString(request);
 
-       // Mockito.when(userService.createUser(ArgumentMatchers.any())).thenReturn(userResponse);
+        // Mockito.when(userService.createUser(ArgumentMatchers.any())).thenReturn(userResponse);
 
         // WHEN, THEN
         mockMvc.perform(MockMvcRequestBuilders.post("/users")

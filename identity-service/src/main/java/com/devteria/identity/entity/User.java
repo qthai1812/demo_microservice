@@ -27,7 +27,6 @@ public class User {
     String firstName;
     String lastName;
 
-
     @ManyToMany
     Set<Role> roles;
 }

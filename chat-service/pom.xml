@@ -15,11 +15,11 @@
 	</parent>
 
 	<groupId>com.example</groupId>
-	<artifactId>file-service</artifactId>
+	<artifactId>chat-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<name>file-service</name>
-	<description>File Service</description>
+	<name>chat-service</name>
+	<description>Chat Service</description>
 
 	<properties>
 		<java.version>21</java.version>

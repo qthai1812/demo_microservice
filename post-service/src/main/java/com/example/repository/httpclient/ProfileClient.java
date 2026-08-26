@@ -6,10 +6,11 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 
-@FeignClient(value = "profile-service",url = "http://localhost:8081/profile/users")
+// profile-service: port 8085, context-path: /profile
+// → endpoint thực tế: http://profile-service:8085/profile/users/{userId}
+@FeignClient(value = "profile-service", url = "http://profile-service:8085")
 public interface ProfileClient {
-    @GetMapping(value = "/{userId}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/profile/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ApiResponse<UserProfileRespone> getUserProfileByUserId(@PathVariable String userId);
 }
