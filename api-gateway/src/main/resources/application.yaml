@@ -48,3 +48,19 @@ spring:
           uri: http://chat-service:8082
           predicates:
             - Path=/chat/**
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: 1. Identity Service
+        url: /identity/v3/api-docs
+      - name: 2. Profile Service
+        url: /profile/v3/api-docs
+      - name: 3. Post Service
+        url: /post/v3/api-docs
+      - name: 4. File Service
+        url: /file/v3/api-docs
+      - name: 5. Chat Service
+        url: /chat/v3/api-docs
+      - name: 6. Notification Service
+        url: /notification/v3/api-docs

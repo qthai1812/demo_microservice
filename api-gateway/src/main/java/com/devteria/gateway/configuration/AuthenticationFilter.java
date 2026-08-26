@@ -40,7 +40,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/identity/auth/refresh",
             "/identity/users",
             "/notification/email",
-            "/file/media/download/.*"
+            "/file/media/download/.*",
+            "/swagger-ui.html",
+            "/swagger-ui/.*",
+            "/webjars/swagger-ui/.*",
+            "/v3/api-docs/.*",
+            "/.*/v3/api-docs"
     };
 
 
