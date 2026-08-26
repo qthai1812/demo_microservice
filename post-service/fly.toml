@@ -1,0 +1,5 @@
+app = "bookteria-post"
+primary_region = "sin"
+
+[build]
+  dockerfile = "Dockerfile"
