@@ -6,11 +6,13 @@ services:
   # 1. MySQL (cho identity-service)
   - type: web
     name: mysql-db
-    env: docker
-    image: mysql:8.0.40-debian
+    runtime: image
+    image:
+      url: mysql:8.0.40-debian
     plan: free
-    port: 3306
     envVars:
+      - key: PORT
+        value: "3306"
       - key: MYSQL_ROOT_PASSWORD
         value: root
       - key: MYSQL_DATABASE
@@ -19,11 +21,13 @@ services:
   # 2. MongoDB (cho post, file, chat, notification)
   - type: web
     name: mongodb-db
-    env: docker
-    image: mongo:8.0.1-noble
+    runtime: image
+    image:
+      url: mongo:8.0.1-noble
     plan: free
-    port: 27017
     envVars:
+      - key: PORT
+        value: "27017"
       - key: MONGO_INITDB_ROOT_USERNAME
         value: root
       - key: MONGO_INITDB_ROOT_PASSWORD
@@ -32,24 +36,28 @@ services:
   # 3. Neo4j (cho profile-service)
   - type: web
     name: neo4j-db
-    env: docker
-    image: neo4j:5.24.2
+    runtime: image
+    image:
+      url: neo4j:5.24.2
     plan: free
-    port: 7474
     envVars:
+      - key: PORT
+        value: "7474"
       - key: NEO4J_AUTH
         value: neo4j/12345678
 
   # 4. Kafka (cho Event broker)
   - type: web
     name: kafka-broker
-    env: docker
-    image: apache/kafka:3.7.0
+    runtime: image
+    image:
+      url: apache/kafka:3.7.0
     plan: free
-    port: 9092
     envVars:
+      - key: PORT
+        value: "9092"
       - key: KAFKA_NODE_ID
-        value: 1
+        value: "1"
       - key: KAFKA_PROCESS_ROLES
         value: broker,controller
       - key: KAFKA_LISTENERS
@@ -63,7 +71,7 @@ services:
       - key: KAFKA_CONTROLLER_QUORUM_VOTERS
         value: 1@kafka-broker:9093
       - key: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
-        value: 1
+        value: "1"
 
   # ============================================================
   # PHẦN 2: CÁC DỊCH VỤ BACKEND (BACKEND SERVICES - FREE WEB SERVICES)
@@ -72,12 +80,13 @@ services:
   # 5. Identity Service
   - type: web
     name: identity-service
-    env: docker
+    runtime: docker
     dockerContext: ./identity-service
     dockerfilePath: Dockerfile
     plan: free
-    port: 8080
     envVars:
+      - key: PORT
+        value: "8080"
       - key: SPRING_DATASOURCE_URL
         value: jdbc:mysql://mysql-db:3306/bookteria_identity?useSSL=false
       - key: SPRING_DATASOURCE_USERNAME
@@ -90,12 +99,13 @@ services:
   # 6. Profile Service
   - type: web
     name: profile-service
-    env: docker
+    runtime: docker
     dockerContext: ./profile-service
     dockerfilePath: Dockerfile
     plan: free
-    port: 8085
     envVars:
+      - key: PORT
+        value: "8085"
       - key: SPRING_NEO4J_URI
         value: bolt://neo4j-db:7687
       - key: SPRING_NEO4J_AUTHENTICATION_USERNAME
@@ -106,48 +116,52 @@ services:
   # 7. Post Service
   - type: web
     name: post-service
-    env: docker
+    runtime: docker
     dockerContext: ./post-service
     dockerfilePath: Dockerfile
     plan: free
-    port: 8084
     envVars:
+      - key: PORT
+        value: "8084"
       - key: SPRING_DATA_MONGODB_URI
         value: mongodb://root:root@mongodb-db:27017/post-service?authSource=admin
 
   # 8. File Service
   - type: web
     name: file-service
-    env: docker
+    runtime: docker
     dockerContext: ./file-service
     dockerfilePath: Dockerfile
     plan: free
-    port: 8081
     envVars:
+      - key: PORT
+        value: "8081"
       - key: SPRING_DATA_MONGODB_URI
         value: mongodb://root:root@mongodb-db:27017/file-service?authSource=admin
 
   # 9. Chat Service
   - type: web
     name: chat-service
-    env: docker
+    runtime: docker
     dockerContext: ./chat-service
     dockerfilePath: Dockerfile
     plan: free
-    port: 8082
     envVars:
+      - key: PORT
+        value: "8082"
       - key: SPRING_DATA_MONGODB_URI
         value: mongodb://root:root@mongodb-db:27017/chat-service?authSource=admin
 
   # 10. Notification Service
   - type: web
     name: notification-service
-    env: docker
+    runtime: docker
     dockerContext: ./notification-service
     dockerfilePath: Dockerfile
     plan: free
-    port: 8083
     envVars:
+      - key: PORT
+        value: "8083"
       - key: SPRING_DATA_MONGODB_URI
         value: mongodb://root:root@mongodb-db:27017/notification-service?authSource=admin
       - key: KAFKA_BOOTSTRAP_SERVERS
@@ -160,12 +174,13 @@ services:
   # 11. API Gateway
   - type: web
     name: api-gateway
-    env: docker
+    runtime: docker
     dockerContext: ./api-gateway
     dockerfilePath: Dockerfile
     plan: free
-    port: 8888
     envVars:
+      - key: PORT
+        value: "8888"
       - key: IDENTITY_SERVICE_URL
         value: http://identity-service:8080
       - key: PROFILE_SERVICE_URL
