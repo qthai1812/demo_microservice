@@ -7,9 +7,11 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.devteria.profile.dto.request.ProfileCreationRequest;
 import com.devteria.profile.dto.request.UserProfileRequest;
 import com.devteria.profile.dto.respone.FileResponse;
 import com.devteria.profile.dto.respone.UserProfileRespone;
+import com.devteria.profile.dto.response.UserProfileResponse;
 import com.devteria.profile.entity.UserProfile;
 import com.devteria.profile.exception.AppException;
 import com.devteria.profile.exception.ErrorCode;
@@ -66,5 +68,18 @@ public class UserProfileService {
         userProfile.setAvatar(fileResponse.getUrl());
 
         return userProfileMapper.toUserProfileRespone(userProfile);
+    }
+
+    public UserProfileResponse createProfile(ProfileCreationRequest request) {
+        UserProfile userProfile = userProfileMapper.toUserProfile(request);
+        userProfileRepository.save(userProfile);
+        return userProfileMapper.toUserProfileResponse(userProfile);
+    }
+
+    public UserProfileResponse getByUserId(String userId) {
+        UserProfile userProfile = userProfileRepository
+                .findUserProfileByUserId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_PROFILE_NOT_FOUND));
+        return userProfileMapper.toUserProfileResponse(userProfile);
     }
 }

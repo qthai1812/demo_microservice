@@ -1,16 +1,18 @@
 package com.devteria.profile.configuration;
 
-import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jwt.SignedJWT;
-import lombok.extern.slf4j.Slf4j;
+import java.time.Instant;
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-import java.util.Date;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.SignedJWT;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -43,8 +45,7 @@ public class CustomJwtDecoder implements JwtDecoder {
                     issuedAt,
                     expiryTime.toInstant(),
                     signedJWT.getHeader().toJSONObject(),
-                    signedJWT.getJWTClaimsSet().getClaims()
-            );
+                    signedJWT.getJWTClaimsSet().getClaims());
         } catch (JwtException e) {
             throw e;
         } catch (Exception e) {
