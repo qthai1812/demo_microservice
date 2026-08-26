@@ -75,8 +75,9 @@ services:
         value: CONTROLLER
       - key: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
         value: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      # Thay đổi thành loopback IP để Kafka tự kết nối nội bộ đến chính nó khi boot, không thông qua DNS Render
       - key: KAFKA_CONTROLLER_QUORUM_VOTERS
-        value: 1@kafka-broker:9093
+        value: 1@127.0.0.1:9093
       - key: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
         value: "1"
       # Giới hạn RAM cho JVM của Kafka để chạy được trên 512MB
