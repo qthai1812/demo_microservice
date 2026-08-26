@@ -6,6 +6,7 @@ server:
 notification:
   email:
     brevo-url: "${BREVO_API_URL:https://api.brevo.com/v3}"
+    brevo-apikey: "${BREVO_API_KEY:}"
 
 spring:
   application:
