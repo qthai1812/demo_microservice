@@ -92,7 +92,7 @@ services:
     name: identity-service
     runtime: docker
     dockerContext: ./identity-service
-    dockerfilePath: Dockerfile
+    dockerfilePath: ./identity-service/Dockerfile
     plan: free
     envVars:
       - key: PORT
@@ -114,7 +114,7 @@ services:
     name: profile-service
     runtime: docker
     dockerContext: ./profile-service
-    dockerfilePath: Dockerfile
+    dockerfilePath: ./profile-service/Dockerfile
     plan: free
     envVars:
       - key: PORT
@@ -133,7 +133,7 @@ services:
     name: post-service
     runtime: docker
     dockerContext: ./post-service
-    dockerfilePath: Dockerfile
+    dockerfilePath: ./post-service/Dockerfile
     plan: free
     envVars:
       - key: PORT
@@ -148,7 +148,7 @@ services:
     name: file-service
     runtime: docker
     dockerContext: ./file-service
-    dockerfilePath: Dockerfile
+    dockerfilePath: ./file-service/Dockerfile
     plan: free
     envVars:
       - key: PORT
@@ -163,7 +163,7 @@ services:
     name: chat-service
     runtime: docker
     dockerContext: ./chat-service
-    dockerfilePath: Dockerfile
+    dockerfilePath: ./chat-service/Dockerfile
     plan: free
     envVars:
       - key: PORT
@@ -178,7 +178,7 @@ services:
     name: notification-service
     runtime: docker
     dockerContext: ./notification-service
-    dockerfilePath: Dockerfile
+    dockerfilePath: ./notification-service/Dockerfile
     plan: free
     envVars:
       - key: PORT
@@ -199,7 +199,7 @@ services:
     name: api-gateway
     runtime: docker
     dockerContext: ./api-gateway
-    dockerfilePath: Dockerfile
+    dockerfilePath: ./api-gateway/Dockerfile
     plan: free
     envVars:
       - key: PORT
