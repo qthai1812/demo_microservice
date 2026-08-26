@@ -2,9 +2,7 @@ FROM apache/kafka:3.7.0
 
 USER root
 
-RUN echo '#!/bin/bash\n\
-export KAFKA_ADVERTISED_LISTENERS="PLAINTEXT://${KAFKA_HOST}:9092"\n\
-exec /opt/kafka/bin/launch "$@"' > /usr/local/bin/entrypoint.sh \
+RUN printf '#!/bin/sh\nexport KAFKA_ADVERTISED_LISTENERS="PLAINTEXT://${KAFKA_HOST}:9092"\nexec /opt/kafka/bin/launch "$@"\n' > /usr/local/bin/entrypoint.sh \
     && chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
