@@ -38,7 +38,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/identity/auth/introspect",
             "/identity/auth/logout",
             "/identity/auth/refresh",
-            "/identity/users",
+            "/identity/users/registration",
             "/notification/email",
             "/file/media/download/.*",
             "/swagger-ui.html",
@@ -70,12 +70,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                         .token(token)
                         .build()
         ).flatMap(introspectResponseApiResponse -> {
-            if(introspectResponseApiResponse.getResult().isValid())
+            var result = introspectResponseApiResponse.getResult();
+            if(result != null && result.isValid())
                 return chain.filter(exchange);
             else
                 return unauthenticated(exchange.getResponse());
-
-
         }).onErrorResume(throwable -> {
             log.error("Lỗi thực sự khi kết nối tới Identity Service:", throwable);
             return unauthenticated(exchange.getResponse());

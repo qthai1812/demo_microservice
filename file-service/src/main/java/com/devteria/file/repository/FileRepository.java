@@ -37,14 +37,22 @@ public class FileRepository {
                 : UUID.randomUUID() + "." + fileExtension;
 
         Path filePath = folder.resolve(fileName).normalize().toAbsolutePath();
+        if (!Files.exists(folder)) {
+            Files.createDirectories(folder);
+        }
 
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        String md5;
+        try (java.io.InputStream is = Files.newInputStream(filePath)) {
+            md5 = DigestUtils.md5DigestAsHex(is);
+        }
 
         return FileInfo.builder()
                 .name(fileName)
                 .size(file.getSize())
                 .contentType(file.getContentType())
-                .md5Checksum(DigestUtils.md5DigestAsHex(file.getInputStream()))
+                .md5Checksum(md5)
                 .path(filePath.toString())
                 .url(urlPrefix + fileName)
                 .build();

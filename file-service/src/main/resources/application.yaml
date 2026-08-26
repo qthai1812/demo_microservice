@@ -15,5 +15,5 @@ jwt:
 
 app:
   file:
-    storage-dir: "${FILE_STORAGE_DIR:/app/uploads}"
+    storage-dir: "${FILE_STORAGE_DIR:./uploads}"
     download-prefix: "${FILE_DOWNLOAD_PREFIX:http://localhost:8888/file/media/download/}"

@@ -110,6 +110,8 @@ services:
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - PROFILE_SERVICE_URL=http://profile-service:8085/profile
+      - JWT_SIGNER_KEY=1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij
     restart: always
 
   gateway-service:
@@ -119,6 +121,13 @@ services:
     hostname: gateway-service
     ports:
       - '8888:8888'
+    environment:
+      - IDENTITY_SERVICE_URL=http://identity-service:8080
+      - PROFILE_SERVICE_URL=http://profile-service:8085/profile
+      - NOTIFICATION_SERVICE_URL=http://notification-service:8083
+      - POST_SERVICE_URL=http://post-service:8084
+      - FILE_SERVICE_URL=http://file-service:8081
+      - CHAT_SERVICE_URL=http://chat-service:8082
     depends_on:
       - identity-service
     restart: always
@@ -154,6 +163,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://root:root@mongodb:27017/chat-service?authSource=admin
+      - PROFILE_SERVICE_URL=http://profile-service:8085/profile
       - JWT_SIGNER_KEY=1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij
     restart: always
 
@@ -187,6 +197,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://root:root@mongodb:27017/post-service?authSource=admin
+      - PROFILE_SERVICE_URL=http://profile-service:8085/profile
       - JWT_SIGNER_KEY=1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij
     restart: always
 
@@ -204,6 +215,7 @@ services:
       - SPRING_NEO4J_URI=bolt://neo4j:7687
       - SPRING_NEO4J_AUTHENTICATION_USERNAME=neo4j
       - SPRING_NEO4J_AUTHENTICATION_PASSWORD=12345678
+      - FILE_SERVICE_URL=http://file-service:8081
       - JWT_SIGNER_KEY=1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij
     restart: always
 

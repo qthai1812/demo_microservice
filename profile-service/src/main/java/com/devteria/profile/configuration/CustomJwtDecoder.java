@@ -26,7 +26,7 @@ public class CustomJwtDecoder implements JwtDecoder {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
 
-            MACVerifier verifier = new MACVerifier(signerKey.getBytes());
+            MACVerifier verifier = new MACVerifier(signerKey.getBytes(java.nio.charset.StandardCharsets.UTF_8));
             boolean verified = signedJWT.verify(verifier);
             if (!verified) {
                 throw new JwtException("Invalid JWT signature");

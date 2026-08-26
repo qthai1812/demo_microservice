@@ -12,7 +12,10 @@ import com.devteria.profile.dto.respone.FileResponse;
 
 // file-service: port 8081, context-path: /file
 // → endpoint thực tế: http://file-service:8081/file/media/upload
-@FeignClient(value = "file-service", url = "http://file-service:8081", configuration = MultipartSupportConfig.class)
+@FeignClient(
+        value = "file-service",
+        url = "${app.services.file.url:http://localhost:8081}",
+        configuration = MultipartSupportConfig.class)
 public interface FileClient {
     @PostMapping(value = "/file/media/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ApiResponse<FileResponse> uploadAvatar(@RequestPart("file") MultipartFile file);
