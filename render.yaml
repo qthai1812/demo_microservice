@@ -101,14 +101,24 @@ services:
     envVars:
       - key: PORT
         value: "8080"
+      - key: MYSQL_HOST
+        fromService:
+          name: mysql-db
+          type: web
+          property: host
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://mysql-db:3306/bookteria_identity?useSSL=false
+        value: jdbc:mysql://${MYSQL_HOST}:3306/bookteria_identity?useSSL=false
       - key: SPRING_DATASOURCE_USERNAME
         value: root
       - key: SPRING_DATASOURCE_PASSWORD
         value: root
+      - key: KAFKA_HOST
+        fromService:
+          name: kafka-broker
+          type: web
+          property: host
       - key: KAFKA_BOOTSTRAP_SERVERS
-        value: kafka-broker:9092
+        value: ${KAFKA_HOST}:9092
       # Giới hạn RAM JVM của Spring Boot
       - key: JAVA_TOOL_OPTIONS
         value: "-Xms128m -Xmx200m"
@@ -123,8 +133,13 @@ services:
     envVars:
       - key: PORT
         value: "8085"
+      - key: NEO4J_HOST
+        fromService:
+          name: neo4j-db
+          type: web
+          property: host
       - key: SPRING_NEO4J_URI
-        value: bolt://neo4j-db:7687
+        value: bolt://${NEO4J_HOST}:7687
       - key: SPRING_NEO4J_AUTHENTICATION_USERNAME
         value: neo4j
       - key: SPRING_NEO4J_AUTHENTICATION_PASSWORD
@@ -142,10 +157,20 @@ services:
     envVars:
       - key: PORT
         value: "8084"
+      - key: MONGODB_HOST
+        fromService:
+          name: mongodb-db
+          type: web
+          property: host
       - key: SPRING_DATA_MONGODB_URI
-        value: mongodb://root:root@mongodb-db:27017/post-service?authSource=admin
+        value: mongodb://root:root://${MONGODB_HOST}:27017/post-service?authSource=admin
+      - key: PROFILE_SERVICE_HOST
+        fromService:
+          name: profile-service
+          type: web
+          property: host
       - key: PROFILE_SERVICE_URL
-        value: http://profile-service:8085
+        value: http://${PROFILE_SERVICE_HOST}:8085
       - key: JAVA_TOOL_OPTIONS
         value: "-Xms128m -Xmx200m"
 
@@ -159,8 +184,13 @@ services:
     envVars:
       - key: PORT
         value: "8081"
+      - key: MONGODB_HOST
+        fromService:
+          name: mongodb-db
+          type: web
+          property: host
       - key: SPRING_DATA_MONGODB_URI
-        value: mongodb://root:root@mongodb-db:27017/file-service?authSource=admin
+        value: mongodb://root:root://${MONGODB_HOST}:27017/file-service?authSource=admin
       - key: JAVA_TOOL_OPTIONS
         value: "-Xms128m -Xmx200m"
 
@@ -174,10 +204,20 @@ services:
     envVars:
       - key: PORT
         value: "8082"
+      - key: MONGODB_HOST
+        fromService:
+          name: mongodb-db
+          type: web
+          property: host
       - key: SPRING_DATA_MONGODB_URI
-        value: mongodb://root:root@mongodb-db:27017/chat-service?authSource=admin
+        value: mongodb://root:root://${MONGODB_HOST}:27017/chat-service?authSource=admin
+      - key: PROFILE_SERVICE_HOST
+        fromService:
+          name: profile-service
+          type: web
+          property: host
       - key: PROFILE_SERVICE_URL
-        value: http://profile-service:8085
+        value: http://${PROFILE_SERVICE_HOST}:8085
       - key: JAVA_TOOL_OPTIONS
         value: "-Xms128m -Xmx200m"
 
@@ -191,10 +231,20 @@ services:
     envVars:
       - key: PORT
         value: "8083"
+      - key: MONGODB_HOST
+        fromService:
+          name: mongodb-db
+          type: web
+          property: host
       - key: SPRING_DATA_MONGODB_URI
-        value: mongodb://root:root@mongodb-db:27017/notification-service?authSource=admin
+        value: mongodb://root:root://${MONGODB_HOST}:27017/notification-service?authSource=admin
+      - key: KAFKA_HOST
+        fromService:
+          name: kafka-broker
+          type: web
+          property: host
       - key: KAFKA_BOOTSTRAP_SERVERS
-        value: kafka-broker:9092
+        value: ${KAFKA_HOST}:9092
       - key: JAVA_TOOL_OPTIONS
         value: "-Xms128m -Xmx200m"
       # Khai báo yêu cầu Render hỏi API Key của người dùng khi deploy Blueprint (thêm value mặc định trống để thỏa mãn validator)
@@ -216,17 +266,47 @@ services:
     envVars:
       - key: PORT
         value: "8888"
+      - key: IDENTITY_SERVICE_HOST
+        fromService:
+          name: identity-service
+          type: web
+          property: host
       - key: IDENTITY_SERVICE_URL
-        value: http://identity-service:8080
+        value: http://${IDENTITY_SERVICE_HOST}:8080
+      - key: PROFILE_SERVICE_HOST
+        fromService:
+          name: profile-service
+          type: web
+          property: host
       - key: PROFILE_SERVICE_URL
-        value: http://profile-service:8085
+        value: http://${PROFILE_SERVICE_HOST}:8085
+      - key: POST_SERVICE_HOST
+        fromService:
+          name: post-service
+          type: web
+          property: host
       - key: POST_SERVICE_URL
-        value: http://post-service:8084
+        value: http://${POST_SERVICE_HOST}:8084
+      - key: FILE_SERVICE_HOST
+        fromService:
+          name: file-service
+          type: web
+          property: host
       - key: FILE_SERVICE_URL
-        value: http://file-service:8081
+        value: http://${FILE_SERVICE_HOST}:8081
+      - key: CHAT_SERVICE_HOST
+        fromService:
+          name: chat-service
+          type: web
+          property: host
       - key: CHAT_SERVICE_URL
-        value: http://chat-service:8082
+        value: http://${CHAT_SERVICE_HOST}:8082
+      - key: NOTIFICATION_SERVICE_HOST
+        fromService:
+          name: notification-service
+          type: web
+          property: host
       - key: NOTIFICATION_SERVICE_URL
-        value: http://notification-service:8083
+        value: http://${NOTIFICATION_SERVICE_HOST}:8083
       - key: JAVA_TOOL_OPTIONS
         value: "-Xms128m -Xmx200m"
