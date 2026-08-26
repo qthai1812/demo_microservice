@@ -44,7 +44,8 @@ public class AuthenticationService {
     UserRepository userRepository;
     InvalidatedTokenRepository invalidatedTokenRepository;
 
-    PasswordEncoder passwordEncoder;
+    @NonFinal
+    PasswordEncoder passwordEncoder = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder(10);
 
     @NonFinal
     @Value("${jwt.signerKey}")
