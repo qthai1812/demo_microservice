@@ -56,9 +56,9 @@ services:
   # 4. Kafka (cho Event broker)
   - type: web
     name: kafka-broker
-    runtime: image
-    image:
-      url: apache/kafka:3.7.0
+    runtime: docker
+    dockerContext: ./kafka-broker
+    dockerfilePath: ./kafka-broker/Dockerfile
     plan: free
     envVars:
       - key: PORT
@@ -69,14 +69,12 @@ services:
         value: broker,controller
       - key: KAFKA_LISTENERS
         value: PLAINTEXT://:9092,CONTROLLER://:9093
-      # Trích xuất host động của chính nó (đã chứa mã hash của Render) để giải quyết lỗi DNS ở phía Client
+      # Trích xuất host động của chính nó (đã chứa mã hash của Render)
       - key: KAFKA_HOST
         fromService:
           name: kafka-broker
           type: web
           property: host
-      - key: KAFKA_ADVERTISED_LISTENERS
-        value: PLAINTEXT://${KAFKA_HOST}:9092
       - key: KAFKA_CONTROLLER_LISTENER_NAMES
         value: CONTROLLER
       - key: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
