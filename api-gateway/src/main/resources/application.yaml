@@ -64,3 +64,8 @@ springdoc:
         url: /chat/v3/api-docs
       - name: 6. Notification Service
         url: /notification/v3/api-docs
+
+app:
+  services:
+    identity:
+      url: "${IDENTITY_SERVICE_URL:http://localhost:8080}/identity"
